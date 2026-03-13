@@ -37,7 +37,7 @@ func main() {
 		fmt.Println("📁 Git name not provided. The module will only use the project name.")
 	}
 
-	fmt.Printf("Iniciando a criação do projeto: %s...\n", projectName)
+	fmt.Printf("Starting the project creation: %s...\n", projectName)
 	for _, dir := range directories {
 		err := os.MkdirAll(dir, 0755)
 		if err != nil {
@@ -61,7 +61,35 @@ func main() {
 		fmt.Printf("Error creating the main.go file: %v\n", err)
 		os.Exit(1)
 	}
-	fmt.Println("\n✅ Project structure successfully created.!")
+	fmt.Println("📁 Main created.!")
+
+	configsFilePath := filepath.Join(projectName, "configs", "config.go")
+
+	templateCode = `
+	package configs
+
+	var cfg *conf
+	type conf struct {
+		DBDriver      string
+		DBHost        string
+		DBPort        string
+		DBUser        string
+		DBPassword    string
+		DBName        string
+		WebServerPort int
+	}
+
+	func LoadConfig(path string) (*conf, error) {
+		// ...
+	}
+	`
+	err = os.WriteFile(configsFilePath, []byte(templateCode), 0644)
+
+	if err != nil {
+		fmt.Printf("Error creating the main.go file: %v\n", err)
+		os.Exit(1)
+	}
+	fmt.Println("📁 Configs created.!")
 
 	cmd := exec.Command("go", "mod", "init", moduleName)
 	cmd.Dir = projectName
